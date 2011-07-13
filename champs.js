@@ -61,7 +61,7 @@ championStats = {
   }, 
   "Lux": {
     "armor": "8 (+4)", 
-    "magic res.": "30", 
+    "magic res.": "30 (+0)", 
     "damage": "50 (+3.3)", 
     "mov. speed": "315", 
     "mana": "250 (+50)", 
@@ -410,7 +410,7 @@ championStats = {
   "Kennen": {
     "armor": "14 (+3.8)", 
     "magic res.": "30 (+0)", 
-    "energy": "200 (", 
+    "energy": "200", 
     "damage": "51.3 (+3.3)", 
     "energy regen.": "50", 
     "mov. speed": "310", 
@@ -662,7 +662,7 @@ championStats = {
   "Akali": {
     "armor": "13.5 (+3.5)", 
     "magic res.": "30 (+1.25)", 
-    "energy": "200 (", 
+    "energy": "200", 
     "damage": "53 (+3.2)", 
     "energy regen.": "50", 
     "mov. speed": "325", 
@@ -758,7 +758,7 @@ championStats = {
   "Lee Sin": {
     "armor": "16 (+3.7)", 
     "magic res.": "30 (+1.25)", 
-    "energy": "200 (", 
+    "energy": "200", 
     "damage": "56 (+3.2)", 
     "energy regen.": "50", 
     "mov. speed": "325", 
@@ -914,7 +914,7 @@ championStats = {
   "Shen": {
     "armor": "18 (+4)", 
     "magic res.": "30", 
-    "energy": "200 (", 
+    "energy": "200", 
     "damage": "53.8 (+3.075)", 
     "energy regen.": "50", 
     "mov. speed": "310", 
@@ -931,8 +931,8 @@ championStats = {
     "mana": "250 (+55)", 
     "range": "550", 
     "health": "360 (+86)", 
-    "mana regen.": "1.4 (0.12)", 
-    "health regen.": "0.87 (0.11)", 
+    "mana regen.": "7 (+0.6)", 
+    "health regen.": "4.35 (+0.55)", 
     "attack speed": "0.625 (+2.11%)"
   }, 
   "Alistar": {

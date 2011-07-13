@@ -8,6 +8,18 @@
 	<script type="text/javascript" src="lol.js"></script>
 	<script type="text/javascript" src="champs.js"></script>
 	<script type="text/javascript" charset="utf-8">
+		//Utility function ==========
+		$empty = function(value) {
+			return value;
+		}
+		function percent(value) {
+			return value/100;
+		}
+		function fixed(value, precision) {
+			var precision = precision || 2
+			return value.toFixed(precision);
+		}
+		// ==========================
 		var champRight = null;
 		var champLeft = null;
 				
@@ -17,7 +29,7 @@
  		ChampionStatFromItemUpdater.prototype.bindToInput = function(stat, inputElementId) {
 			this.inputs.push(inputElementId);
 			$(inputElementId).live("keyup", {updater: this}, function(e){
-				champRight[stat] = parseInt($(this).val() || 0);
+				champRight.statsFromItems.set(stat, parseFloat($(this).val() || 0));
 				updateEffectiveHealth();
 				updateChampInfo(champRight, $("#RightChamp").find(".champion"));
 			});
@@ -29,27 +41,26 @@
 		}
 		
 		var statsUpdater = new ChampionStatFromItemUpdater();
-		statsUpdater.bindToInput("healthFromItems", "#healthFromItems");
-		statsUpdater.bindToInput("armorFromItems", "#armorFromItems");
-		statsUpdater.bindToInput("magicResistFromItems", "#magicResistFromItems");		
+		statsUpdater.bindToInput("health", "#healthFromItems");
+		statsUpdater.bindToInput("armor", "#armorFromItems");
+		statsUpdater.bindToInput("magicResist", "#magicResistFromItems");		
 		
 		function updateChampInfo(champion, champInfoElement) {
-			
 			var table = $("<table></table>", {
 				"class": "champ_info_table"
 			});
 			var row = $("<tr></tr>");
 			row.append($("<th>Health</th>"));
-			row.append($("<td>" + champion.health() + "</td>"));
+			row.append($("<td>" + fixed(champion.getStat("health")) + "</td>"));
 			row.append($("<th>Armor</th>"));
-			row.append($("<td>" + champion.armor().amount + "</td>"));			
+			row.append($("<td>" + fixed(champion.getStat("armor").amount) + "</td>"));			
 			table.append(row);
 			
-			row = $("<tr></tr>");
+			row = $("<tr></tr>"); 
 			row.append($("<th>Attack</th>"));
-			row.append($("<td>" + champion.attackDamage() + "</td>"));
+			row.append($("<td>" + fixed(champion.getStat("attackDamage")) + "</td>"));
 			row.append($("<th>Magic Resist</th>"));
-			row.append($("<td>" + champion.magicResist().amount + "</td>"));			
+			row.append($("<td>" + fixed(champion.getStat("magicResist").amount) + "</td>"));			
 			table.append(row);
 			champInfoElement.empty();
 			champInfoElement.append(table);	
@@ -59,9 +70,9 @@
 		}
 		function updateEffectiveHealth(){
 			$("#effectiveHealthPhysical").empty();
-			$("#effectiveHealthPhysical").append(champRight.armor().effectiveHealth().toFixed(2));
+			$("#effectiveHealthPhysical").append(fixed(champRight.getStat("armor").effectiveHealth()));
 			$("#effectiveHealthMagic").empty();
-			$("#effectiveHealthMagic").append(champRight.magicResist().effectiveHealth().toFixed(2));		
+			$("#effectiveHealthMagic").append(fixed(champRight.getStat("magicResist").effectiveHealth()));
 		}
 		function createChampLevelSelect() {
 			var select = $("<select></select>");
@@ -147,16 +158,16 @@
 				var damageDisplay = $("#DamageDisplay").find('div');
 				var defPen = new DefensePenetration({
 					reduction: parseFloat($("#defenseReduction").val() || 0),
-					reductionPercent: parseFloat($("#defenseReductionPercent").val() || 0),
+					reductionPercent: percent(parseFloat($("#defenseReductionPercent").val() || 0)),
 					penetration: parseFloat($("#defensePenetration").val() || 0),
-					penetrationPercent: parseFloat($("#defensePenetrationPercent").val() || 0)
+					penetrationPercent: percent(parseFloat($("#defensePenetrationPercent").val() || 0))
 				});
 
 				var hit = new Hit(parseFloat($("#damageAmount").val()), null, defPen);
 				if (damageType == "AD") {
-					damageDealt = champRight.armor().applyHit(hit);
+					damageDealt = champRight.getStat("armor").applyHit(hit);
 				} else if (damageType == "AP") {
-					damageDealt = champRight.magicResist().applyHit(hit);
+					damageDealt = champRight.getStat("magicResist").applyHit(hit);
 				}
 				
 				damageDisplay.empty();

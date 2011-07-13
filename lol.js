@@ -33,12 +33,15 @@ DamageReduction.prototype.mitigate = function(damage, defensePenetration) {
     return damage * this.multiplier(amount);
 }
 
-DamageReduction.prototype.applyHit = function(hitObject) {
-	return this.mitigate(hitObject.amount, hitObject.defensePenetration);
+DamageReduction.prototype.applyHit = function(hit) {
+	// Accepts a Hit object instance and applies the damage. Returns
+	// the final modified damage value after damage reduction has been
+	// applied.
+	return this.mitigate(hit.amount, hit.defensePenetration);
 }
 
 DamageReduction.prototype.multiplier = function(amount) {
-	var amount = (amount == undefined) ? this.amount : amount;
+	var amount = amount || this.amount;
 	if (amount >= 0) {
     	return 100 / (100 + amount);
     } else if (amount < 0) {
@@ -49,7 +52,7 @@ DamageReduction.prototype.multiplier = function(amount) {
 DamageReduction.prototype.effectiveHealth = function(health) {
 	var health = health || 0;
 	if (this.champion) {
-		health = this.champion.health();
+		health = this.champion.getStat("health");
 	}
 	if (health == 0){
 		return 0;
@@ -78,45 +81,21 @@ var Hit = function(amount, damageType, defensePenetration) {
 // Champion Object: Simple object to represent a champion.
 var Champion = function(champName){
 	this.name = champName;
-	// Base Armor
-	this._armor = null;
-	this._armorPerLevel = null;
-	// Base MR
-	this._magicResist = null;
-	this._magicResistPerLevel = null
-	this._health = null;
-	this._healthPerLevel = null;
-	this._mana = null;
-	this._manaPerLevel = null;
-	// Base attack damage.
-	this._attackDamage = null;
-	this._attackDamagePerLevel = null;
+	this.baseStats = new Stats();
+	// If you want to add additional stats from items use the statsFromItems property.
+	this.statsFromItems = new Stats();	
 	this._level = 0;
 	
-	//If you want to add additional armor or MR use the following properties
 	this.armorFromItems = 0;
 	this.magicResistFromItems = 0;
 	this.healthFromItems = 0;
 }
-
-Champion.prototype.armor = function() {
-	return new DamageReduction(this._armor + this.armorFromItems + (this._armorPerLevel * this._level), this);
-}
-
-Champion.prototype.magicResist = function(){
-	return new DamageReduction(this._magicResist + this.magicResistFromItems + (this._magicResistPerLevel* this._level), this);
-}
-
-Champion.prototype.health = function() {
-	return this._health + this.healthFromItems + (this._healthPerLevel * this._level);
-}
-
-Champion.prototype.mana = function(){
-	return this._mana + (this._manaPerLevel * this._level);
-}
-
-Champion.prototype.attackDamage = function(){
-	return this._attackDamage + (this._attackDamagePerLevel * this._level);
+Champion.prototype.getStat = function(statName) {
+	var stat = this.baseStats.get(statName, this._level) + this.statsFromItems.get(statName);
+	if (statName == "armor" || statName == "magicResist") {
+		return new DamageReduction(stat, this);
+	}
+	return stat;
 }
 
 Champion.prototype.level = function(){
@@ -129,32 +108,6 @@ Champion.prototype.setLevel = function(level) {
 	}
 	this._level = level - 1;
 }
-
-Champion.prototype.setBaseMana = function(mana, perLevel){
-	this._mana = mana;
-	this._manaPerLevel = perLevel;
-}
-
-Champion.prototype.setBaseHealth = function(health, perLevel){
-	this._health = health;
-	this._healthPerLevel = perLevel;
-}
-
-Champion.prototype.setBaseArmor = function(armor, perLevel){
-	this._armor = armor;
-	this._armorPerLevel = perLevel;
-}
-
-Champion.prototype.setBaseMagicResist = function(magicResist, perLevel){
-	this._magicResist = magicResist;
-	this._magicResistPerLevel = perLevel;
-}
-
-Champion.prototype.setBaseAttackDamage = function(attackDamage, perLevel) {
-	this._attackDamage = attackDamage;
-	this._attackDamagePerLevel = perLevel;
-}
-
 
 var perLevelRegex = /^([^\s]*)\s\(\+\s?([^\)]*)\)$/;
 function parsePerLevelInc(value){
@@ -179,14 +132,37 @@ function parsePerLevelInc(value){
 function championFactory(champName, championObject){
 	champion = new Champion(champName);
 	
-	function setter(setterMethod, valueObject){
-		champion[setterMethod](valueObject.value, valueObject.perLevel);
+	function setter(statName, valueObject){
+		// Sets base stats on a Champion object instance.
+		champion.baseStats.set(statName, valueObject.value, valueObject.perLevel);
 	}	
 	
-	setter("setBaseHealth", parsePerLevelInc(championObject["health"]));
-	setter("setBaseAttackDamage", parsePerLevelInc(championObject["damage"]));
-	setter("setBaseArmor", parsePerLevelInc(championObject["armor"]));
-	setter("setBaseMagicResist", parsePerLevelInc(championObject["magic res."]));
-	setter("setBaseMana", parsePerLevelInc(championObject["mana"]));
+	setter("health", parsePerLevelInc(championObject["health"]));
+	setter("attackDamage", parsePerLevelInc(championObject["damage"]));
+	setter("armor", parsePerLevelInc(championObject["armor"]));
+	setter("magicResist", parsePerLevelInc(championObject["magic res."]));
+	setter("mana", parsePerLevelInc(championObject["mana"]));
 	return champion;
 }
+
+var Stat = function(statName, value, perLevel) {
+	this.name = statName;
+	this.value = value;
+	this.perLevel = perLevel || 0;
+}
+
+var Stats = function(){
+	this.stats = {};
+}
+Stats.prototype.set = function(statName, value, perLevel) {
+	this.stats[statName] = new Stat(statName, value, perLevel);
+}
+Stats.prototype.get = function(statName, champLevel) {
+	var stat = this.stats[statName];
+	if (!stat) {
+		return 0;
+	}
+	return stat.value + ((champLevel || 0) * stat.perLevel);
+}
+
+var Rune = function(){}

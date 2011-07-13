@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>LoL damage calculator</title>
+	<link rel="stylesheet" type="text/css" href="lol.css"/>
+    <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="lol.js"></script>
+	<script type="text/javascript" src="champs.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		var champRight = null;
+		var champLeft = null;
+				
+		var ChampionStatFromItemUpdater = function(){
+			this.inputs = [];
+		}		
+ 		ChampionStatFromItemUpdater.prototype.bindToInput = function(stat, inputElementId) {
+			this.inputs.push(inputElementId);
+			$(inputElementId).live("keyup", {updater: this}, function(e){
+				champRight[stat] = parseInt($(this).val() || 0);
+				updateEffectiveHealth();
+				updateChampInfo(champRight, $("#RightChamp").find(".champion"));
+			});
+		}
+		ChampionStatFromItemUpdater.prototype.reset = function() {
+			for (index in this.inputs) {
+				$(this.inputs[index]).val("0");
+			}
+		}
+		
+		var statsUpdater = new ChampionStatFromItemUpdater();
+		statsUpdater.bindToInput("healthFromItems", "#healthFromItems");
+		statsUpdater.bindToInput("armorFromItems", "#armorFromItems");
+		statsUpdater.bindToInput("magicResistFromItems", "#magicResistFromItems");		
+		
+		function updateChampInfo(champion, champInfoElement) {
+			
+			var table = $("<table></table>", {
+				"class": "champ_info_table"
+			});
+			var row = $("<tr></tr>");
+			row.append($("<th>Health</th>"));
+			row.append($("<td>" + champion.health() + "</td>"));
+			row.append($("<th>Armor</th>"));
+			row.append($("<td>" + champion.armor().amount + "</td>"));			
+			table.append(row);
+			
+			row = $("<tr></tr>");
+			row.append($("<th>Attack</th>"));
+			row.append($("<td>" + champion.attackDamage() + "</td>"));
+			row.append($("<th>Magic Resist</th>"));
+			row.append($("<td>" + champion.magicResist().amount + "</td>"));			
+			table.append(row);
+			champInfoElement.empty();
+			champInfoElement.append(table);	
+			if (champRight) {
+				updateEffectiveHealth();		
+			}
+		}
+		function updateEffectiveHealth(){
+			$("#effectiveHealthPhysical").empty();
+			$("#effectiveHealthPhysical").append(champRight.armor().effectiveHealth().toFixed(2));
+			$("#effectiveHealthMagic").empty();
+			$("#effectiveHealthMagic").append(champRight.magicResist().effectiveHealth().toFixed(2));		
+		}
+		function createChampLevelSelect() {
+			var select = $("<select></select>");
+			for (i=0;i<18;i++) {
+				select.append($("<option></option>", {
+					value: i+1,
+					text: i+1
+				}));
+			}
+			select.change(function() {
+				// #ChampLeft or #ChampRight
+				var champContainer = $(this).parent().parent().parent();
+				var champion = null;
+				
+				if (champContainer.attr('id') == "LeftChamp") {
+					champion = champLeft;
+				} else {
+					champion = champRight;
+				}
+				
+				champion.setLevel(parseInt($(this).val()));
+				updateChampInfo(champion, champContainer.find(".champion"));
+								
+			});
+			return select;
+		}
+		function createChampSelect() {
+			// Build the champion pulldown and attach .change event to it.
+			// When a champion is selected it is looked up in championStats
+			// object(champs.js) and passed to championFactory. The return value of
+			// championFactory will become the new left or right champion
+			//
+			// The champion info box will then be updated to reflect the 
+			// current champions.
+			
+			var select = $("<select></select>", {"class": "champ_select"});
+			var champNames = []
+			for (champName in championStats) {
+				champNames.push(champName);
+			}
+			champNames.sort();
+			for (index in champNames) {
+				select.append($("<option></option>", {
+					text: champNames[index],
+					value: champNames[index],
+				}));
+			}
+			// When the user selects a champion, update the champ info box below.
+			select.change(function() {
+				var champName = $(this).val();
+				// #ChampLeft or #ChampRight
+				var champContainer = $(this).parent().parent().parent();
+				
+				if (champContainer.attr('id') == "LeftChamp") {
+					champLeft = newChamp = championFactory(champName, championStats[champName]);
+				} else {
+					champRight = newChamp = championFactory(champName, championStats[champName]);
+					statsUpdater.reset();					
+				}
+				
+				updateChampInfo(newChamp, champContainer.find(".champion"));
+				$(".champ_level_select_container").find("select").val('1');				
+			});
+
+			return select;
+		}
+		
+		$(document).ready(function(){
+			var select = null;
+			$(".champ_select_container").each(function(i){
+				select = createChampSelect();
+				$(this).append(select);
+				select.trigger("change");
+			});
+			
+			$(".champ_level_select_container").each(function(i){
+				$(this).append(createChampLevelSelect());
+			});
+			$("#calculateDamage").click(function(e){
+				e.preventDefault();
+				var damageType = $("#damageType").val();
+				var damageDealt = 0;
+				var damageDisplay = $("#DamageDisplay").find('div');
+				var defPen = new DefensePenetration({
+					reduction: parseFloat($("#defenseReduction").val() || 0),
+					reductionPercent: parseFloat($("#defenseReductionPercent").val() || 0),
+					penetration: parseFloat($("#defensePenetration").val() || 0),
+					penetrationPercent: parseFloat($("#defensePenetrationPercent").val() || 0)
+				});
+
+				var hit = new Hit(parseFloat($("#damageAmount").val()), null, defPen);
+				if (damageType == "AD") {
+					damageDealt = champRight.armor().applyHit(hit);
+				} else if (damageType == "AP") {
+					damageDealt = champRight.magicResist().applyHit(hit);
+				}
+				
+				damageDisplay.empty();
+				damageDisplay.append(damageDealt.toFixed(2));
+				
+			});
+									
+		});
+	</script>
+</head>
+	<body>
+		<div id="PageWrap">
+			<div id="ChampMatchUp">
+				<div id="LeftChamp">
+					<div>
+						<span class="champ_select_container"></span>
+						Lvl <span class="champ_level_select_container"></span>
+					</div>
+					<div class="champion"></div>
+					<div id="DamageData" class="hit_calculation">
+						<p>Attack</p>
+						<div>
+							<fieldset>
+								<legend>Damage</legend>
+								<label for="damageAmount">type</label>
+								<select id="damageType">
+									<option value="AD">physical</option>
+									<option value="AP">magic</option>
+								</select>
+								<label for="damageAmount">amount</label>
+								<input type="text" id="damageAmount" size="4" maxlength="4" value="0" />
+							</fieldset>
+						</div>
+						<div>
+							<fieldset id="DefensePenetration">
+								<legend>Defense penetration</legend>
+								<label for="defenseReduction">flat reduction</label>
+								<input type="text" id="defenseReduction" value="0">
+							
+								<label for="defenseReductionPercent">% reduction</label>
+								<input type="text" id="defenseReductionPercent" value="0">
+							
+								<label for="defensePenetration">flat penetration</label>
+								<input type="text" id="defensePenetration" value="0">
+							
+								<label for="defensePenetrationPercent">% penetration</label>
+								<input type="text" id="defensePenetrationPercent" value="0">
+							</fieldset>
+						</div>
+						<div id="SubmitButtonDiv"><input type="submit" id="calculateDamage" value="apply damage" /></div>
+					</div>
+				</div>
+				<div id="ChampSep"> VS </div>
+				<div id="RightChamp">
+					<div>
+						<span class="champ_select_container"></span>
+						Lvl <span class="champ_level_select_container"></span>
+					</div>
+					<div class="champion"></div>
+					<div id="DamageData" class="hit_calculation">
+						<p>Defense</p>
+						<div>
+							<fieldset>
+								<legend>Stats from items</legend>
+								<label for="healthFromItems">health</label>
+								<input type="text" id="healthFromItems" size="4" maxlength="4" value="0" />
+								
+								<label for="armorFromItems">armor</label>
+								<input type="text" id="armorFromItems" size="4" maxlength="4" value="0" />							
+								
+								<label for="magicResistFromItems">magic resist</label>
+								<input type="text" id="magicResistFromItems" size="4" maxlength="4" value="0" />								
+							</fieldset>
+							<div>
+								<div class="effective_health"><span>effective health (armor): </span><span id="effectiveHealthPhysical"></span></div>
+								<div class="effective_health"><span>effective health (magic): </span><span id="effectiveHealthMagic"></span></div>							
+							</div>
+						</div>
+					</div>
+					<div id="DamageDisplay">
+						<p>Damage</p>
+						<div>0</div>
+					</div>					
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

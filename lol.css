@@ -1,0 +1,56 @@
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;	
+}
+#LeftChamp {
+	float: left;
+}
+#ChampSep {
+	float: left;
+	width: 100px;
+	text-align: center;
+	margin-top: 40px;
+}
+#RightChamp {
+	float: left;
+}
+.hit_calculation label {
+	display: block;
+	float: left;
+	width: 8em;
+	margin-right: 1em;	
+}
+.hit_calculation input[type="text"], .hit_calculation select {
+	display: block;
+	padding: 0;
+	margin-bottom: 1em;
+}
+.hit_calculation p {
+	text-align: center;
+	font-weight: bold;
+}
+#SubmitButtonDiv {
+	margin: 1em;
+}
+#SubmitButtonDiv input {
+	width: 100%;
+}
+#DamageDisplay {
+	text-align: center;
+	font-size: 25px;
+	font-weight: bold;
+}
+.champ_info_table td {
+	width: 50px;
+}
+.champ_info_table th {
+	text-align: left;
+}
+.effective_health {
+	font-size: 11px;
+	font-style: italic;
+	margin-left: 1em;
+	padding: 0;
+}
+input[type="text"] {
+	width:50px;
+}

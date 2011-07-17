@@ -1,3 +1,4 @@
+// DefensePenetration Object: Represents both magic and armor penetration/reduction.
 var DefensePenetration = function(initObject){
 	this.reduction = initObject['reduction'] || null;
 	this.reductionPercent = initObject['reductionPercent'] || null;
@@ -90,6 +91,7 @@ var Champion = function(champName){
 	this.magicResistFromItems = 0;
 	this.healthFromItems = 0;
 }
+
 Champion.prototype.getStat = function(statName) {
 	var stat = this.baseStats.get(statName, this._level) + this.statsFromItems.get(statName);
 	if (statName == "armor" || statName == "magicResist") {
@@ -107,6 +109,23 @@ Champion.prototype.setLevel = function(level) {
 		throw RangeError;
 	}
 	this._level = level - 1;
+}
+
+// championFactory creates Champion instances from champion stat objects in champs.js
+function championFactory(champName, championObject){
+	champion = new Champion(champName);
+	
+	function setter(statName, valueObject){
+		// Sets base stats on a Champion object instance.
+		champion.baseStats.set(statName, valueObject.value, valueObject.perLevel);
+	}	
+	
+	setter("health", parsePerLevelInc(championObject["health"]));
+	setter("attackDamage", parsePerLevelInc(championObject["damage"]));
+	setter("armor", parsePerLevelInc(championObject["armor"]));
+	setter("magicResist", parsePerLevelInc(championObject["magic res."]));
+	setter("mana", parsePerLevelInc(championObject["mana"]));
+	return champion;
 }
 
 var perLevelRegex = /^([^\s]*)\s\(\+\s?([^\)]*)\)$/;
@@ -128,23 +147,7 @@ function parsePerLevelInc(value){
 	return result;
 }
 
-// championFactory creates Champion instances from champion stat objects in champs.js
-function championFactory(champName, championObject){
-	champion = new Champion(champName);
-	
-	function setter(statName, valueObject){
-		// Sets base stats on a Champion object instance.
-		champion.baseStats.set(statName, valueObject.value, valueObject.perLevel);
-	}	
-	
-	setter("health", parsePerLevelInc(championObject["health"]));
-	setter("attackDamage", parsePerLevelInc(championObject["damage"]));
-	setter("armor", parsePerLevelInc(championObject["armor"]));
-	setter("magicResist", parsePerLevelInc(championObject["magic res."]));
-	setter("mana", parsePerLevelInc(championObject["mana"]));
-	return champion;
-}
-
+// Stat objects
 var Stat = function(statName, value, perLevel) {
 	this.name = statName;
 	this.value = value;
@@ -154,9 +157,11 @@ var Stat = function(statName, value, perLevel) {
 var Stats = function(){
 	this.stats = {};
 }
+
 Stats.prototype.set = function(statName, value, perLevel) {
 	this.stats[statName] = new Stat(statName, value, perLevel);
 }
+
 Stats.prototype.get = function(statName, champLevel) {
 	var stat = this.stats[statName];
 	if (!stat) {
@@ -165,4 +170,27 @@ Stats.prototype.get = function(statName, champLevel) {
 	return stat.value + ((champLevel || 0) * stat.perLevel);
 }
 
-var Rune = function(){}
+// Rune objects
+var Runes = function() {
+	this.runes = []
+}
+
+Runes.prototype.add = function(rune) {
+	this.runes.push(rune)
+}
+
+Runes.prototype.getStat = function(statName, champLevel) {
+	statValue = 0;
+	for (index in this.runes) {
+		statValue = statValue + this.runes[index].stats.get(statName, champLevel);
+	}
+	return statValue;
+}
+
+var Rune = function(runeType, runeName, statName, statValue, perLevel, isPrimary){
+	this.type = runeType;
+	this.name = runeName;
+	this.isPrimary = isPrimary || false;
+	this.stats = Stat();
+	this.stats.set(statName, statValue, perLevel || 0);
+}

@@ -7,6 +7,7 @@
     <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
 	<script type="text/javascript" src="lol.js"></script>
 	<script type="text/javascript" src="champs.js"></script>
+
 	<script type="text/javascript" charset="utf-8">
 		//Utility function ==========
 		$empty = function(value) {
@@ -50,16 +51,16 @@
 				"class": "champ_info_table"
 			});
 			var row = $("<tr></tr>");
-			row.append($("<th>Health</th>"));
+			row.append($("<th><img src=\"images/healthIcon.jpg\" />Health</th>"));
 			row.append($("<td>" + fixed(champion.getStat("health")) + "</td>"));
-			row.append($("<th>Armor</th>"));
+			row.append($("<th><img src=\"images/armorIcon.jpg\" />Armor</th>"));
 			row.append($("<td>" + fixed(champion.getStat("armor").amount) + "</td>"));			
 			table.append(row);
 			
 			row = $("<tr></tr>"); 
-			row.append($("<th>Attack</th>"));
+			row.append($("<th><img src=\"images/attackIcon.jpg\" />Attack</th>"));
 			row.append($("<td>" + fixed(champion.getStat("attackDamage")) + "</td>"));
-			row.append($("<th>Magic Resist</th>"));
+			row.append($("<th><img src=\"images/magicresistIcon.jpg\" />Magic Resist</th>"));
 			row.append($("<td>" + fixed(champion.getStat("magicResist").amount) + "</td>"));			
 			table.append(row);
 			champInfoElement.empty();
@@ -180,78 +181,115 @@
 </head>
 	<body>
 		<div id="PageWrap">
+			<div id="logo"></div>
+		
 			<div id="ChampMatchUp">
 				<div id="LeftChamp">
+					<div class="heading">Attacking</div>
+
+					<hr />
 					<div>
-						<span class="champ_select_container"></span>
-						Lvl <span class="champ_level_select_container"></span>
+						<div class="ChampAvatar">image</div>
+						<div class="champ_select_container"></div>
+						<div class="champ_level_select_container">Lvl </div>
+						<div style="clear: both;"></div>
 					</div>
+					
 					<div class="champion"></div>
+
 					<div id="DamageData" class="hit_calculation">
-						<p>Attack</p>
+						
 						<div>
 							<fieldset>
-								<legend>Damage</legend>
+								<div class="subheading">Damage</div>
+								<hr />
 								<label for="damageAmount">type</label>
+
 								<select id="damageType">
+
 									<option value="AD">physical</option>
 									<option value="AP">magic</option>
 								</select>
 								<label for="damageAmount">amount</label>
 								<input type="text" id="damageAmount" size="4" maxlength="4" value="0" />
 							</fieldset>
+
 						</div>
+
 						<div>
 							<fieldset id="DefensePenetration">
-								<legend>Defense penetration</legend>
-								<label for="defenseReduction">flat reduction</label>
+								<div class="subheading">Defense penetration</div>
+								<hr />
+								<label for="defenseReduction">flat reduction <img src="images/help.png" alt="Info" class="helpicon" /></label>
 								<input type="text" id="defenseReduction" value="0">
 							
-								<label for="defenseReductionPercent">% reduction</label>
+								<label for="defenseReductionPercent">% reduction <img src="images/help.png" alt="Info" class="helpicon" /></label>
+
 								<input type="text" id="defenseReductionPercent" value="0">
 							
-								<label for="defensePenetration">flat penetration</label>
+								<label for="defensePenetration">flat penetration <img src="images/help.png" alt="Info" class="helpicon" /></label>
 								<input type="text" id="defensePenetration" value="0">
 							
-								<label for="defensePenetrationPercent">% penetration</label>
+								<label for="defensePenetrationPercent">% penetration <img src="images/help.png" alt="Info" class="helpicon" /></label>
 								<input type="text" id="defensePenetrationPercent" value="0">
 							</fieldset>
 						</div>
-						<div id="SubmitButtonDiv"><input type="submit" id="calculateDamage" value="apply damage" /></div>
+
+						
+
 					</div>
 				</div>
-				<div id="ChampSep"> VS </div>
-				<div id="RightChamp">
-					<div>
-						<span class="champ_select_container"></span>
-						Lvl <span class="champ_level_select_container"></span>
-					</div>
-					<div class="champion"></div>
-					<div id="DamageData" class="hit_calculation">
-						<p>Defense</p>
+				<div id="ChampSep"></div>
+				<div id="RightWrapper">
+					<div id="RightChamp">
+					<div class="heading">Defending</div>
+					<hr />
 						<div>
-							<fieldset>
-								<legend>Stats from items</legend>
-								<label for="healthFromItems">health</label>
-								<input type="text" id="healthFromItems" size="4" maxlength="4" value="0" />
-								
-								<label for="armorFromItems">armor</label>
-								<input type="text" id="armorFromItems" size="4" maxlength="4" value="0" />							
-								
-								<label for="magicResistFromItems">magic resist</label>
-								<input type="text" id="magicResistFromItems" size="4" maxlength="4" value="0" />								
-							</fieldset>
+
+							<div class="ChampAvatar">image</div>
+							<div class="champ_select_container"></div>
+							<div class="champ_level_select_container">Lvl </div>
+							<div style="clear: both;"></div>
+						</div>
+						<div class="champion"></div>
+						<div id="DamageData" class="hit_calculation">
+							
 							<div>
-								<div class="effective_health"><span>effective health (armor): </span><span id="effectiveHealthPhysical"></span></div>
-								<div class="effective_health"><span>effective health (magic): </span><span id="effectiveHealthMagic"></span></div>							
+
+								<fieldset>
+									<div class="subheading">Stats from items</div>
+									<hr />
+									<label for="healthFromItems">health</label>
+
+									<input type="text" id="healthFromItems" size="4" maxlength="4" value="0" />
+									
+									<label for="armorFromItems">armor</label>
+									<input type="text" id="armorFromItems" size="4" maxlength="4" value="0" />							
+									
+									<label for="magicResistFromItems">magic resist</label>
+
+									<input type="text" id="magicResistFromItems" size="4" maxlength="4" value="0" />								
+								</fieldset>
+								<div>
+									<div class="effective_health"><span>effective health (armor): <img src="images/help.png" alt="Info" class="helpicon" /></span><span id="effectiveHealthPhysical"></span></div>
+
+									<div class="effective_health"><span>effective health (magic): <img src="images/help.png" alt="Info" class="helpicon" /></span><span id="effectiveHealthMagic"></span></div>							
+								</div>
 							</div>
 						</div>
+
+					
 					</div>
-					<div id="DamageDisplay">
-						<p>Damage</p>
-						<div>0</div>
-					</div>					
-				</div>
+					
+					<div id="DamageBox">
+						<div id="SubmitButtonDiv"><input type="submit" id="calculateDamage" value="apply damage" /></div>
+						<div id="DamageDisplay">
+							<div>0</div>
+						</div>	
+					</div>
+				</div><!--end rightwrapper-->
+				<div style="clear: both;"></div>
+
 			</div>
 		</div>
 	</body>

@@ -65,13 +65,17 @@ hr {
     padding-left: 34px;
     width: 8em;
 }
-.ChampAvatar {
+.champ_avatar {
     background-color: black;
     border: 1px solid #2C231A;
     float: left;
     height: 60px;
     margin-bottom: 10px;
     width: 60px;
+}
+.champ_avatar img {
+	width: 60px;
+	height: 60px;
 }
 .champ_select_container, .champ_level_select_container {
     float: left;

@@ -20,6 +20,9 @@
 			var precision = precision || 2
 			return value.toFixed(precision);
 		}
+		function normalize(value) {
+			return value.replace(/[\s\'\.]/g, "").toLowerCase();
+		}
 		// ==========================
 		var champRight = null;
 		var champLeft = null;
@@ -50,6 +53,10 @@
 			var table = $("<table></table>", {
 				"class": "champ_info_table"
 			});
+			var parent = champInfoElement.parent();
+			var champAvatarDiv = champInfoElement.parent().find(".champ_avatar");
+			var champAvatar = champAvatarDiv.find("img")[0];
+
 			var row = $("<tr></tr>");
 			row.append($("<th><img src=\"images/healthIcon.jpg\" />Health</th>"));
 			row.append($("<td>" + fixed(champion.getStat("health")) + "</td>"));
@@ -68,6 +75,10 @@
 			if (champRight) {
 				updateEffectiveHealth();		
 			}
+			
+			// switch champ avatar
+			champAvatar.src = championStats[champion.name].avatar.src;
+			
 		}
 		function updateEffectiveHealth(){
 			$("#effectiveHealthPhysical").empty();
@@ -113,6 +124,9 @@
 			var champNames = []
 			for (champName in championStats) {
 				champNames.push(champName);
+				// preload champ avatar image
+				championStats[champName].avatar = new Image();
+				championStats[champName].avatar.src = "images/champion_portraits/" + normalize(champName) + ".png";
 			}
 			champNames.sort();
 			for (index in champNames) {
@@ -189,7 +203,7 @@
 
 					<hr />
 					<div>
-						<div class="ChampAvatar">image</div>
+						<div class="champ_avatar"><img src="" alt="Champion Avatar"/></div>
 						<div class="champ_select_container"></div>
 						<div class="champ_level_select_container">Lvl </div>
 						<div style="clear: both;"></div>
@@ -246,7 +260,7 @@
 					<hr />
 						<div>
 
-							<div class="ChampAvatar">image</div>
+							<div class="champ_avatar"><img src="" alt="Champion Avatar"/></div>
 							<div class="champ_select_container"></div>
 							<div class="champ_level_select_container">Lvl </div>
 							<div style="clear: both;"></div>

@@ -1,56 +1,180 @@
 body {
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;	
+    background-image: url("images/bodybg.jpg");
+    background-position: center top;
+    background-repeat: no-repeat;
+    color: #9AA7B0;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    margin: 0 auto;
+}
+#PageWrap {
+    margin: 0 auto;
+    padding-top: 20px;
+    width: 960px;
+}
+#logo {
+    background-image: url("images/lol-calc-logo.png");
+    background-position: center top;
+    background-repeat: no-repeat;
+    height: 92px;
+    width: 960px;
+}
+#ChampMatchUp {
+    background-image: url("images/innerBG.png");
+    border: 1px solid #595C54;
+    margin: 0 auto;
+    padding: 10px;
+    width: 940px;
 }
 #LeftChamp {
-	float: left;
+    background-image: url("images/attackingBG.png");
+    border: 1px solid #4A0000;
+    float: left;
+    padding: 10px;
+    width: 390px;
 }
 #ChampSep {
-	float: left;
-	width: 100px;
-	text-align: center;
-	margin-top: 40px;
+    background-image: url("images/vs.png");
+    float: left;
+    height: 83px;
+    margin: 160px 10px 10px;
+    text-align: center;
+    width: 95px;
+}
+#RightWrapper {
+    float: left;
 }
 #RightChamp {
-	float: left;
+    background-image: url("images/defendingBG.png");
+    border: 1px solid #203D18;
+    padding: 10px;
+    width: 390px;
+}
+.heading {
+    font-size: 34px;
+    font-weight: bold;
+}
+hr {
+    background-image: url("images/hrBG.png");
+    border: 0 none;
+    height: 1px;
 }
 .hit_calculation label {
-	display: block;
-	float: left;
-	width: 8em;
-	margin-right: 1em;	
+    display: block;
+    float: left;
+    margin-right: 1em;
+    padding-left: 34px;
+    width: 8em;
 }
-.hit_calculation input[type="text"], .hit_calculation select {
-	display: block;
-	padding: 0;
-	margin-bottom: 1em;
+.ChampAvatar {
+    background-color: black;
+    border: 1px solid #2C231A;
+    float: left;
+    height: 60px;
+    margin-bottom: 10px;
+    width: 60px;
+}
+.champ_select_container, .champ_level_select_container {
+    float: left;
+    margin-left: 10px;
+    margin-top: 18px;
+}
+.champion {
+    font-size: 14px;
+}
+.champion td {
+    color: #BC7378;
+    padding-left: 20px;
+    padding-right: 10px;
+}
+.champ_select_container select, .champ_level_select_container select, .hit_calculation input[type="text"], .hit_calculation select {
+    background-color: black;
+    border: 1px solid #2C231A;
+    color: white;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 1em;
+    padding: 4px 8px;
+}
+.champ_select_container select, .champ_level_select_container select {
+    color: #9AA7B0;
+    display: inline;
+    font-size: 16px;
+    padding-bottom: 0;
+    padding-top: 2px;
+}
+.subheading {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 18px;
+}
+fieldset {
+    border: 0 none;
+    padding: 0;
+}
+select option {
+    border: 1px solid #1D1D1D;
+    padding: 0 10px;
 }
 .hit_calculation p {
-	text-align: center;
-	font-weight: bold;
+    font-weight: bold;
+    text-align: center;
 }
 #SubmitButtonDiv {
-	margin: 1em;
+    margin: 1em;
 }
 #SubmitButtonDiv input {
-	width: 100%;
+    width: 100%;
 }
 #DamageDisplay {
-	text-align: center;
-	font-size: 25px;
-	font-weight: bold;
+    color: #F13C3C;
+    font-size: 34px;
+    font-weight: bold;
+    text-align: center;
 }
 .champ_info_table td {
-	width: 50px;
+    width: 50px;
 }
 .champ_info_table th {
-	text-align: left;
+    text-align: left;
+}
+.champ_info_table img {
+    margin-right: 6px;
+    vertical-align: middle;
 }
 .effective_health {
-	font-size: 11px;
-	font-style: italic;
-	margin-left: 1em;
-	padding: 0;
+    font-size: 11px;
+    font-style: italic;
+    margin-left: 1em;
+    padding: 0;
 }
 input[type="text"] {
-	width:50px;
+    width: 50px;
 }
+#DamageBox {
+    background-image: url("images/innerBG.png");
+    border: 1px solid #2B2B2B;
+    margin-top: 14px;
+    padding: 10px;
+    text-align: center;
+    width: 390px;
+}
+input#calculateDamage {
+    background-image: url("images/submitbutton.jpg");
+    border: 0 none;
+    color: #9AA7B0;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    height: 44px;
+    text-transform: uppercase;
+    width: 282px;
+}
+.helpicon {
+    padding-bottom: 3px;
+    vertical-align: middle;
+}
+#effectiveHealthPhysical, #effectiveHealthMagic {
+    color: #BC7378;
+    padding-left: 20px;
+}
+Firebug's log limit has been reached. 0 entries not shown.		Preferences
